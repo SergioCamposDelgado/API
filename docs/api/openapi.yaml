@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: API Security Example (DWES)
+  title: API de Datos Meteorológicos
   version: "1.2.0"
   description: >
     API educativa con Spring Boot, JWT y control de acceso por roles (ROLE_USER, ROLE_ADMIN).
