@@ -3,15 +3,10 @@ info:
   title: API de Datos Meteorológicos
   version: "1.2.0"
   description: >
-    API educativa con Spring Boot, JWT y control de acceso por roles (ROLE_USER, ROLE_ADMIN).
-    Spec alineado con los DTOs reales del backend:
-    - SignUpRequest       : firstName, lastName, email, password
-    - SigninRequest       : email, password
-    - UsuarioResponse    : firstName, lastName, email, rol (string singular)
-    - ErrorDetailsResponse: timestamp, message, details
-    - POST /auth/signup  -> 200 + JWT
-    - POST /weather      -> 200 + DatoMeteorologico
-    - DELETE /weather/{id}-> 200 sin body
+    API educativa con Spring Boot, JWT y control de acceso por roles.
+    Sincronizada con WeatherController real:
+    - Base Path: /api/clima
+    - Gestión de ciudades y consulta de clima actual.
 
 servers:
   - url: http://localhost:9091
@@ -21,15 +16,10 @@ tags:
   - name: Auth
     description: Autenticación y registro de usuarios
   - name: Meteorologia
-    description: CRUD de datos meteorológicos — lectura requiere USER/ADMIN, escritura requiere ADMIN
+    description: Operaciones de clima y ciudades (WeatherController)
   - name: Users
-    description: Gestión/listado de usuarios (solo ADMIN)
-  - name: Resources
-    description: Recurso protegido de ejemplo
+    description: Gestión de usuarios (Solo ADMIN)
 
-# ──────────────────────────────────────────────────────────────────────────────
-# COMPONENTS
-# ──────────────────────────────────────────────────────────────────────────────
 components:
   securitySchemes:
     bearerAuth:
@@ -38,400 +28,183 @@ components:
       bearerFormat: JWT
 
   schemas:
-
-    # ── Error ──────────────────────────────────────────────────────────────────
-    # Refleja exactamente: ErrorDetailsResponse(Date timestamp, String message, String details)
-    ErrorDetailsResponse:
-      type: object
-      required: [timestamp, message, details]
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-          description: Fecha y hora del error (java.util.Date serializado como ISO-8601)
-          example: "2026-02-19T18:20:30.123+00:00"
-        message:
-          type: string
-          description: Descripción corta del error
-          example: "Unauthorized"
-        details:
-          type: string
-          description: Información adicional, normalmente la URI de la petición
-          example: "uri=/api/v1/weather"
-
     # ── Auth ───────────────────────────────────────────────────────────────────
     SigninRequest:
       type: object
-      description: Credenciales para obtener un JWT.
       required: [email, password]
       properties:
-        email:
-          type: string
-          format: email
-          example: alice.johnson@example.com
-        password:
-          type: string
-          example: password123
+        email: { type: string, format: email, example: alice.johnson@example.com }
+        password: { type: string, example: password123 }
 
     SignUpRequest:
       type: object
-      description: Datos de registro de un nuevo usuario. El backend asigna ROLE_USER por defecto.
       required: [firstName, lastName, email, password]
       properties:
-        firstName:
-          type: string
-          example: Alice
-        lastName:
-          type: string
-          example: Johnson
-        email:
-          type: string
-          format: email
-          example: alice.johnson@example.com
-        password:
-          type: string
-          example: password123
+        firstName: { type: string, example: Alice }
+        lastName: { type: string, example: Johnson }
+        email: { type: string, format: email, example: alice.johnson@example.com }
+        password: { type: string, example: password123 }
 
     JwtAuthenticationResponse:
       type: object
-      description: Respuesta devuelta en signin y signup con el JWT generado.
-      required: [token]
       properties:
-        token:
-          type: string
-          description: JWT Bearer token
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZS5qb2huc29uQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImlhdCI6MTcwODM2OTQwMCwiZXhwIjoxNzA4MzczMDAwfQ.signature"
+        token: { type: string, example: "eyJhbGciOiJIUzI1Ni..." }
 
-    # ── Meteorología ───────────────────────────────────────────────────────────
-    DatoMeteorologico:
+    # ── Datos de Clima (Sincronizados con el código) ───────────────────────────
+    Ciudad:
       type: object
-      description: Dato meteorológico persistido devuelto por el servidor. El id lo asigna el servidor.
-      required: [id, ciudad, temperatura, estado]
+      required: [nombre]
       properties:
-        id:
-          type: integer
-          format: int64
-          readOnly: true
-          example: 1
-        ciudad:
-          type: string
-          example: Sevilla
-        temperatura:
-          type: number
-          format: float
-          example: 22.5
-        humedad:
-          type: integer
-          example: 45
-        estado:
-          type: string
-          description: Descripción del clima (Soleado, Nublado, etc.)
-          example: "Soleado"
+        id: { type: integer, format: int64, readOnly: true, example: 1 }
+        nombre: { type: string, example: "Sevilla" }
+        latitud: { type: number, format: double, example: 37.38 }
+        longitud: { type: number, format: double, example: -5.98 }
 
-    MeteorologiaWriteRequest:
+    WeatherDTO:
       type: object
-      description: >
-        Cuerpo para crear (POST) o actualizar (PUT) un dato meteorológico.
-        El id no se incluye; en PUT se obtiene del path.
-      required: [ciudad, temperatura, estado]
+      description: Datos climáticos devueltos por weatherService.obtenerClimaPorCoordenadas
       properties:
-        ciudad:
-          type: string
-          example: Sevilla
-        temperatura:
-          type: number
-          example: 22.5
-        estado:
-          type: string
-          example: "Soleado"
+        temperatura: { type: number, example: 22.5 }
+        descripcion: { type: string, example: "cielo claro" }
+        humedad: { type: integer, example: 45 }
+        vientoVelocidad: { type: number, example: 12.5 }
 
-    # ── Spring Data Page ───────────────────────────────────────────────────────
-    SortObject:
-      type: object
-      properties:
-        empty:
-          type: boolean
-        sorted:
-          type: boolean
-        unsorted:
-          type: boolean
-
-    PageableObject:
-      type: object
-      properties:
-        pageNumber:
-          type: integer
-        pageSize:
-          type: integer
-        offset:
-          type: integer
-          format: int64
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
-
-    PageMeteorologia:
-      type: object
-      description: Respuesta paginada de Spring Data (Page<DatoMeteorologico>).
-      required: [content, number, size, totalElements, totalPages, first, last, empty]
-      properties:
-        content:
-          type: array
-          items:
-            $ref: "#/components/schemas/DatoMeteorologico"
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        number:
-          type: integer
-          description: Página actual (0-based)
-          example: 0
-        size:
-          type: integer
-          example: 10
-        numberOfElements:
-          type: integer
-          example: 10
-        totalElements:
-          type: integer
-          format: int64
-          example: 42
-        totalPages:
-          type: integer
-          example: 5
-        first:
-          type: boolean
-          example: true
-        last:
-          type: boolean
-          example: false
-        empty:
-          type: boolean
-          example: false
-
-    # ── Users ──────────────────────────────────────────────────────────────────
-    # Refleja exactamente: UsuarioResponse(String firstName, String lastName, String email, String rol)
     UsuarioResponse:
       type: object
-      required: [firstName, lastName, email, rol]
       properties:
-        firstName:
-          type: string
-          example: Alice
-        lastName:
-          type: string
-          example: Johnson
-        email:
-          type: string
-          format: email
-          example: alice.johnson@example.com
-        rol:
-          type: string
-          description: Rol asignado al usuario (campo singular string, no array)
-          example: ROLE_USER
+        firstName: { type: string, example: Alice }
+        lastName: { type: string, example: Johnson }
+        email: { type: string, example: alice.johnson@example.com }
+        rol: { type: string, example: ROLE_USER }
 
 # ──────────────────────────────────────────────────────────────────────────────
 # PATHS
 # ──────────────────────────────────────────────────────────────────────────────
 paths:
-
   # ── AUTH ───────────────────────────────────────────────────────────────────
   /api/v1/auth/signin:
     post:
       tags: [Auth]
-      summary: Login — obtención de JWT
-      operationId: signin
-      security: []
+      summary: Login - obtención de JWT
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/SigninRequest"
+            schema: { $ref: "#/components/schemas/SigninRequest" }
       responses:
         "200":
-          description: JWT generado correctamente
+          description: OK
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/JwtAuthenticationResponse"
-        "401":
-          description: Credenciales incorrectas
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDetailsResponse"
+              schema: { $ref: "#/components/schemas/JwtAuthenticationResponse" }
 
   /api/v1/auth/signup:
     post:
       tags: [Auth]
-      summary: Registro de nuevo usuario
-      operationId: signup
-      description: >
-        Crea un usuario con ROLE_USER y devuelve un JWT directamente.
-      security: []
+      summary: Registro de usuario
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/SignUpRequest"
+            schema: { $ref: "#/components/schemas/SignUpRequest" }
       responses:
         "200":
-          description: Usuario registrado — devuelve JWT
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/JwtAuthenticationResponse"
+          description: OK
 
-  # ── METEOROLOGÍA (colección) ───────────────────────────────────────────────
-  /api/v1/weather:
+  # ── CLIMA (WeatherController) ──────────────────────────────────────────────
+  /api/clima/ciudades:
     get:
       tags: [Meteorologia]
-      summary: Listado paginado de datos meteorológicos
-      operationId: listMeteorologia
-      description: Requiere ROLE_USER o ROLE_ADMIN.
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: query
-          name: page
-          description: Número de página (0-based)
-          schema:
-            type: integer
-            default: 0
-        - in: query
-          name: size
-          description: Elementos por página.
-          schema:
-            type: integer
-            default: 10
+      summary: Obtener el listado de ciudades guardadas
+      security: [{ bearerAuth: [] }]
       responses:
         "200":
-          description: Página de datos meteorológicos
+          description: Lista de ciudades devuelta correctamente
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PageMeteorologia"
+                type: array
+                items: { $ref: "#/components/schemas/Ciudad" }
 
     post:
       tags: [Meteorologia]
-      summary: Crear registro meteorológico
-      operationId: createMeteorologia
-      description: Requiere ROLE_ADMIN.
-      security:
-        - bearerAuth: []
+      summary: Agregar una nueva ciudad a la lista
+      security: [{ bearerAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/MeteorologiaWriteRequest"
+            schema: { $ref: "#/components/schemas/Ciudad" }
       responses:
         "200":
-          description: Dato creado
+          description: Ciudad agregada correctamente
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/DatoMeteorologico"
+              schema: { $ref: "#/components/schemas/Ciudad" }
 
-  # ── METEOROLOGÍA (recurso individual) ──────────────────────────────────────
-  /api/v1/weather/{id}:
+  /api/clima/ciudades/{id}:
     parameters:
       - in: path
         name: id
         required: true
-        description: ID del dato meteorológico
-        schema:
-          type: integer
-          format: int64
-          example: 1
-
-    get:
-      tags: [Meteorologia]
-      summary: Obtener dato meteorológico por ID
-      operationId: getMeteorologiaById
-      description: Requiere ROLE_USER o ROLE_ADMIN.
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Dato encontrado
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DatoMeteorologico"
-        "404":
-          description: No encontrado
-
+        schema: { type: integer, format: int64 }
     put:
       tags: [Meteorologia]
-      summary: Actualizar dato meteorológico
-      operationId: updateMeteorologia
-      description: Requiere ROLE_ADMIN.
-      security:
-        - bearerAuth: []
+      summary: Actualizar una ciudad existente
+      security: [{ bearerAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/MeteorologiaWriteRequest"
+            schema: { $ref: "#/components/schemas/Ciudad" }
       responses:
         "200":
-          description: Dato actualizado
+          description: Ciudad actualizada
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/DatoMeteorologico"
-
+              schema: { $ref: "#/components/schemas/Ciudad" }
     delete:
       tags: [Meteorologia]
-      summary: Eliminar registro meteorológico
-      operationId: deleteMeteorologia
-      description: Requiere ROLE_ADMIN.
-      security:
-        - bearerAuth: []
+      summary: Eliminar una ciudad
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204":
+          description: Éxito (No Content)
+
+  /api/clima/hoy:
+    get:
+      tags: [Meteorologia]
+      summary: Obtener el clima actual por coordenadas
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: lat
+          required: true
+          schema: { type: number, format: double }
+          example: 37.38
+        - in: query
+          name: lon
+          required: true
+          schema: { type: number, format: double }
+          example: -5.98
       responses:
         "200":
-          description: Registro eliminado correctamente
+          description: Datos del clima obtenidos
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WeatherDTO" }
 
   # ── USERS ──────────────────────────────────────────────────────────────────
   /api/v1/users:
     get:
       tags: [Users]
-      summary: Listar todos los usuarios
-      operationId: listUsers
-      description: Requiere ROLE_ADMIN.
-      security:
-        - bearerAuth: []
+      summary: Listar todos los usuarios (Solo ADMIN)
+      security: [{ bearerAuth: [] }]
       responses:
         "200":
-          description: Lista de usuarios
+          description: OK
           content:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: "#/components/schemas/UsuarioResponse"
-
-  # ── RESOURCES ──────────────────────────────────────────────────────────────
-  /api/v1/resources:
-    get:
-      tags: [Resources]
-      summary: Recurso protegido de ejemplo
-      operationId: getProtectedResource
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Recurso devuelto correctamente
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Recurso protegido OK"
+                items: { $ref: "#/components/schemas/UsuarioResponse" }
