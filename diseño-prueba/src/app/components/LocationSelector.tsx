@@ -1,23 +1,13 @@
 import { MapPin } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import { City, cities } from "../data/cities";
 
 interface LocationSelectorProps {
-  currentLocation: string;
-  onLocationChange: (location: string) => void;
+  currentLocation: City;
+  onLocationChange: (location: City) => void;
   scrollProgress: number;
 }
-
-const popularLocations = [
-  "Madrid",
-  "Barcelona",
-  "Valencia",
-  "Sevilla",
-  "Bilbao",
-  "Málaga",
-  "Zaragoza",
-  "Murcia"
-];
 
 export function LocationSelector({ currentLocation, onLocationChange, scrollProgress }: LocationSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,7 +33,7 @@ export function LocationSelector({ currentLocation, onLocationChange, scrollProg
         }}
       >
         <MapPin className="w-5 h-5" />
-        <span className="text-lg">{currentLocation}</span>
+        <span className="text-lg">{currentLocation.nombre}</span>
       </motion.button>
 
       {isOpen && (
@@ -56,9 +46,9 @@ export function LocationSelector({ currentLocation, onLocationChange, scrollProg
             backgroundColor: dropdownBg,
           }}
         >
-          {popularLocations.map((location, index) => (
+          {cities.map((location, index) => (
             <motion.button
-              key={location}
+              key={location.nombre}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
@@ -67,17 +57,17 @@ export function LocationSelector({ currentLocation, onLocationChange, scrollProg
                 setIsOpen(false);
               }}
               className={`w-full text-left px-6 py-3 transition-all border-b last:border-b-0 ${
-                currentLocation === location ? "opacity-100" : "opacity-70"
+                currentLocation.nombre === location.nombre ? "opacity-100" : "opacity-70"
               }`}
               style={{
                 borderColor: dropdownBorder,
                 color: dropdownText,
-                backgroundColor: currentLocation === location 
+                backgroundColor: currentLocation.nombre === location.nombre 
                   ? dropdownItemBg 
                   : "transparent"
               }}
             >
-              {location}
+              {location.nombre}
             </motion.button>
           ))}
         </motion.div>

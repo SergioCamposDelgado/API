@@ -5,6 +5,8 @@ import { LocationSelector } from "../components/LocationSelector";
 import { DayNightBackground } from "../components/DayNightBackground";
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
+import { City, cities } from "../data/cities";
+import { getWeatherByCoordinates } from "../services/weatherAPI";
 
 // Mock weather data for different cities
 export const weatherDataByCity: Record<string, any> = {
@@ -155,10 +157,32 @@ export const weatherDataByCity: Record<string, any> = {
 };
 
 function Home() {
-  const [currentLocation, setCurrentLocation] = useState("Madrid");
+  const [currentLocation, setCurrentLocation] = useState<City>(cities[0]);
   const [scrollProgress, setScrollProgress] = useState(0);
-  
-  const currentWeather = weatherDataByCity[currentLocation];
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentWeather, setCurrentWeather] = useState(weatherDataByCity["Madrid"]);
+
+  // Fetch weather when location changes
+  useEffect(() => {
+    const fetchWeather = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getWeatherByCoordinates(currentLocation.latitud, currentLocation.longitud);
+        console.log("Weather data:", data);
+        // TODO: Update currentWeather with real data from API
+        // For now, use mock data
+        setCurrentWeather(weatherDataByCity[currentLocation.nombre]);
+      } catch (error) {
+        console.error("Error fetching weather:", error);
+        // Fallback to mock data
+        setCurrentWeather(weatherDataByCity[currentLocation.nombre]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchWeather();
+  }, [currentLocation]);
 
   // Track scroll position
   useEffect(() => {
@@ -210,7 +234,7 @@ function Home() {
           <WeatherCard
             weather={{
               ...currentWeather,
-              location: currentLocation,
+              location: currentLocation.nombre,
             }}
             scrollProgress={scrollProgress}
           />
