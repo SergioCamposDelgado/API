@@ -187,12 +187,12 @@ function Home() {
       try {
         const data = await getWeatherByCoordinates(currentLocation.latitud, currentLocation.longitud);
         console.log("Weather data:", data);
-
-        setCurrentWeather(weatherDataByCity[currentLocation.nombre]);
+        // Usar los datos reales del API
+        setCurrentWeather(data);
       } catch (error) {
         console.error("Error fetching weather:", error);
-
-        setCurrentWeather(weatherDataByCity[currentLocation.nombre]);
+        // Fallback a mock data si hay error
+        setCurrentWeather(weatherDataByCity[currentLocation.nombre] || weatherDataByCity["Madrid"]);
       } finally {
         setIsLoading(false);
       }
