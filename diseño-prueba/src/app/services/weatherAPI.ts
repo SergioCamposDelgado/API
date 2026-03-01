@@ -120,3 +120,62 @@ export const getCities = async (): Promise<City[]> => {
     throw error;
   }
 };
+
+export const addCity = async (city: Omit<City, 'id'>): Promise<City> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ciudades`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(city),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error adding city:", error);
+    throw error;
+  }
+};
+
+export const updateCity = async (id: number, city: Omit<City, 'id'>): Promise<City> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ciudades/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(city),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating city:", error);
+    throw error;
+  }
+};
+
+export const deleteCity = async (id: number): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ciudades/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error("Error deleting city:", error);
+    throw error;
+  }
+};

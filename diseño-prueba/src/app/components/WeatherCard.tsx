@@ -1,14 +1,11 @@
-import { Cloud, Droplets, Wind, Eye, Gauge } from "lucide-react";
+import { Cloud } from "lucide-react";
 import { motion } from "motion/react";
 
 interface WeatherData {
   temperature: number;
   condition: string;
-  humidity: number;
-  windSpeed: number;
-  visibility: number;
-  pressure: number;
-  feelsLike: number;
+  is_day: number;
+  time: string;
   location: string;
 }
 
@@ -73,83 +70,9 @@ export function WeatherCard({ weather, scrollProgress }: WeatherCardProps) {
           className="opacity-60"
           style={{ color: secondaryColor }}
         >
-          Sensación térmica {weather.feelsLike}°C
+          {weather.time}
         </p>
       </motion.div>
-
-      {/* Weather details grid - minimalist */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8"
-      >
-        <DetailItem
-          icon={<Droplets className="w-6 h-6" />}
-          label="Humedad"
-          value={`${weather.humidity}%`}
-          textColor={textColor}
-          secondaryColor={secondaryColor}
-        />
-        <DetailItem
-          icon={<Wind className="w-6 h-6" />}
-          label="Viento"
-          value={`${weather.windSpeed} km/h`}
-          textColor={textColor}
-          secondaryColor={secondaryColor}
-        />
-        <DetailItem
-          icon={<Eye className="w-6 h-6" />}
-          label="Visibilidad"
-          value={`${weather.visibility} km`}
-          textColor={textColor}
-          secondaryColor={secondaryColor}
-        />
-        <DetailItem
-          icon={<Gauge className="w-6 h-6" />}
-          label="Presión"
-          value={`${weather.pressure} mb`}
-          textColor={textColor}
-          secondaryColor={secondaryColor}
-        />
-      </motion.div>
     </div>
-  );
-}
-
-interface DetailItemProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  textColor: string;
-  secondaryColor: string;
-}
-
-function DetailItem({ icon, label, value, textColor, secondaryColor }: DetailItemProps) {
-  return (
-    <motion.div 
-      className="text-center"
-      whileHover={{ scale: 1.05 }}
-      transition={{ type: "spring", stiffness: 300 }}
-    >
-      <div 
-        className="flex justify-center mb-3 opacity-60"
-        style={{ color: secondaryColor }}
-      >
-        {icon}
-      </div>
-      <p 
-        className="text-sm mb-1 opacity-60"
-        style={{ color: secondaryColor }}
-      >
-        {label}
-      </p>
-      <p 
-        className="text-xl"
-        style={{ color: textColor }}
-      >
-        {value}
-      </p>
-    </motion.div>
   );
 }

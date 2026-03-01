@@ -6,8 +6,8 @@ export interface ForecastDay {
   day: string;
   tempMax: number;
   tempMin: number;
-  condition: string;
-  precipitation: number;
+  condition?: string;
+  precipitation?: number;
 }
 
 interface ForecastCardProps {
@@ -19,7 +19,9 @@ interface ForecastCardProps {
 export function ForecastCard({ forecast, index, scrollProgress }: ForecastCardProps) {
   const navigate = useNavigate();
   
-  const getWeatherIcon = (condition: string) => {
+  const getWeatherIcon = (condition?: string) => {
+    if (!condition) return <Cloud className="w-10 h-10" />;
+    
     const lowerCondition = condition.toLowerCase();
     const iconClass = "w-10 h-10";
     
@@ -35,7 +37,6 @@ export function ForecastCard({ forecast, index, scrollProgress }: ForecastCardPr
     return <Cloud className={iconClass} />;
   };
 
-  // Calculate colors based on scroll progress
   const primaryColor = scrollProgress > 0.5 ? '#ffffff' : '#1a202c';
   const secondaryColor = scrollProgress > 0.5 ? 'rgba(226, 232, 240, 0.7)' : 'rgba(74, 85, 104, 0.7)';
   const iconColor = scrollProgress > 0.5 ? 'rgba(226, 232, 240, 0.8)' : 'rgba(45, 55, 72, 0.8)';
@@ -79,7 +80,7 @@ export function ForecastCard({ forecast, index, scrollProgress }: ForecastCardPr
           </span>
         </div>
         
-        {forecast.precipitation > 0 && (
+        {forecast.precipitation && forecast.precipitation > 0 && (
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
