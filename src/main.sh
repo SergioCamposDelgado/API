@@ -261,7 +261,7 @@ compose() {
 # -----------------------------
 # Backend (GitHub) + Dockerfile auto
 # -----------------------------
-BACKEND_REPO_URL="https://github.com/profeInformatica101/API_SEGURITY_EXAMPLE.git"
+BACKEND_REPO_URL="https://github.com/sergiocamposdelgado/API_SEGURITY_EXAMPLE.git"
 BACKEND_BRANCH="agregado_cors"
 BACKEND_DIR="$ROOT_DIR/src/Backend/API_SEGURITY_EXAMPLE"
 
