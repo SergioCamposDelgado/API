@@ -31,7 +31,7 @@ El proyecto permite gestionar datos climáticos, consultar el tiempo por ciudade
     ├── log/
     ├── src/
     │   ├── Backend/
-    │   │   └── API_METEOROLOGIA/
+    │   │   └── API_SEGURITY_EXAMPLE/
     │   ├── Frontend/
     │   └── main.sh
 
@@ -112,9 +112,9 @@ despliegue.
 
 La rama descargada automáticamente se define en `main.sh`:
 
-    BACKEND_REPO_URL="https://github.com/SergioCamposDelgado/API.git"
-    BACKEND_BRANCH="documentacion"
-    BACKEND_DIR="$ROOT_DIR/src/Backend/API_METEOROLOGIA"
+    BACKEND_REPO_URL="https://github.com/SergioCamposDelgado/API_SEGURITY_EXAMPLE.git"
+    BACKEND_BRANCH="agregado_cors"
+    BACKEND_DIR="$ROOT_DIR/src/Backend/API_SEGURITY_EXAMPLE"
 
 Para cambiar la versión del backend:
 
@@ -144,11 +144,11 @@ POST `/api/v1/auth/signin`
 
 ### Datos Meteorológicos
 
-GET `/api/v1/weather`\
-POST `/api/v1/weather`\
-GET `/api/v1/weather/{id}`\
-PUT `/api/v1/weather/{id}`\
-DELETE `/api/v1/weather/{id}`
+GET `/api/clima/ciudades` -> Listado de ciudades
+POST `/api/clima/ciudades` -> Guardar ciudad
+GET `/api/clima/hoy?lat={lat}&lon={lon}` -> Clima actual por coordenadas
+PUT `/api/clima/ciudades/{id}` -> Editar ciudad
+DELETE `/api/clima/ciudades/{id}` -> Eliminar ciudad
 
 ### Usuarios (ROLE_ADMIN)
 
