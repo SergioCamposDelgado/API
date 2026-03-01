@@ -29,8 +29,17 @@ export function Login() {
       localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
       
       navigate("/");
-    } catch (err) {
-      setError("Email o contraseña incorrectos");
+    } catch (err: any) {
+      const errorMsg = err?.message || "Error en la solicitud";
+      if (errorMsg.includes("403")) {
+        setError("Acceso denegado - Verifica credenciales");
+      } else if (errorMsg.includes("404")) {
+        setError("Backend no disponible en puerto 9091");
+      } else if (errorMsg.includes("Failed")) {
+        setError("No se puede conectar al servidor");
+      } else {
+        setError("Email o contraseña incorrectos");
+      }
       console.error(err);
     } finally {
       setIsLoading(false);

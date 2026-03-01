@@ -9,7 +9,7 @@ import {
   deleteCity,
   type City,
 } from "../services/weatherAPI";
-import { Plus, Edit2, Trash2, X, LogOut } from "lucide-react";
+import { Plus, Edit2, Trash2, X, LogOut, ArrowLeft } from "lucide-react";
 
 export function AdminPanel() {
   const [cities, setCities] = useState<City[]>([]);
@@ -152,20 +152,32 @@ export function AdminPanel() {
             </p>
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              localStorage.removeItem("token");
-              localStorage.removeItem("email");
-              localStorage.removeItem("isAdmin");
-              navigate("/login");
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            Cerrar sesión
-          </motion.button>
+          <div className="flex items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Volver
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                localStorage.removeItem("token");
+                localStorage.removeItem("email");
+                localStorage.removeItem("isAdmin");
+                navigate("/login");
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+              Cerrar sesión
+            </motion.button>
+          </div>
         </motion.header>
 
         {/* Main Content */}
