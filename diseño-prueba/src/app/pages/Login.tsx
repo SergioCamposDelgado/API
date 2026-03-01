@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { DayNightBackground } from "../components/DayNightBackground";
 import { signin } from "../services/weatherAPI";
+import { jwtDecode } from "jwt-decode";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -19,8 +20,13 @@ export function Login() {
     try {
       const response = await signin({ email, password });
       
+      const decoded: any = jwtDecode(response.token);
+      const roles = decoded.rol || [];
+      const isAdmin = roles.includes("ROLE_ADMIN");
+      
       localStorage.setItem("token", response.token);
       localStorage.setItem("email", email);
+      localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
       
       navigate("/");
     } catch (err) {

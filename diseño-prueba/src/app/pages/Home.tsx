@@ -18,6 +18,7 @@ function Home() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin") || "false");
 
   useEffect(() => {
     const loadCities = async () => {
@@ -103,7 +104,7 @@ function Home() {
 
             {/* Auth Buttons */}
             <div className="flex items-center gap-2">
-              {token && (
+              {isAdmin && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -123,6 +124,7 @@ function Home() {
                   onClick={() => {
                     localStorage.removeItem("token");
                     localStorage.removeItem("email");
+                    localStorage.removeItem("isAdmin");
                     navigate("/login");
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"

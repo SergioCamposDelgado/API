@@ -27,12 +27,13 @@ export function AdminPanel() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin") || "false");
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
+    if (!token || !isAdmin) {
+      navigate("/");
     }
-  }, [token, navigate]);
+  }, [token, isAdmin, navigate]);
 
   // Cargar ciudades
   useEffect(() => {
@@ -157,6 +158,7 @@ export function AdminPanel() {
             onClick={() => {
               localStorage.removeItem("token");
               localStorage.removeItem("email");
+              localStorage.removeItem("isAdmin");
               navigate("/login");
             }}
             className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"

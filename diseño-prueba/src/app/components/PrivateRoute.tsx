@@ -12,6 +12,7 @@ export function PrivateRoute({
 }: PrivateRouteProps) {
   const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("token");
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin") || "false");
 
   useEffect(() => {
     setIsLoading(false);
@@ -30,6 +31,10 @@ export function PrivateRoute({
 
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requireAdmin && !isAdmin) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
