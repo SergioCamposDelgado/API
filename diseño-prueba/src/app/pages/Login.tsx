@@ -73,7 +73,7 @@ export function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@clima.com"
+                  placeholder="tu@email.com"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                   required
                 />
@@ -111,16 +111,7 @@ export function Login() {
               </motion.button>
             </form>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg"
-            >
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                <strong>Demo:</strong> admin@clima.com / admin123
-              </p>
-            </motion.div>
+
           </motion.div>
 
           <motion.div
