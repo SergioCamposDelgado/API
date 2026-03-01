@@ -50,7 +50,7 @@ components:
       properties:
         token: { type: string, example: "eyJhbGciOiJIUzI1Ni..." }
 
-    # ── Datos de Clima (Sincronizados con el código) ───────────────────────────
+    # ── Datos de Clima  ───────────────────────────
     Ciudad:
       type: object
       required: [nombre]
@@ -111,7 +111,7 @@ paths:
         "200":
           description: OK
 
-  # ── CLIMA (WeatherController) ──────────────────────────────────────────────
+  # ── CLIMA  ──────────────────────────────────────────────
   /api/clima/ciudades:
     get:
       tags: [Meteorologia]
