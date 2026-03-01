@@ -95,14 +95,14 @@ export function Login() {
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
+                className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></span>
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
                     Autenticando...
                   </span>
                 ) : (
@@ -118,14 +118,16 @@ export function Login() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400"
+            className="mt-6 text-center"
           >
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/")}
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors underline"
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
             >
-              Volver a la página principal
-            </button>
+              ← Volver a la página principal
+            </motion.button>
           </motion.div>
         </motion.div>
       </div>
