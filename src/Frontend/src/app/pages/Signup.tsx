@@ -24,7 +24,7 @@ export function Signup() {
 
       // Decodificar el JWT para extraer el rol
       const decoded: any = jwtDecode(response.token);
-      const roles = decoded.rol || [];
+      const roles = decoded.roles || [];
       const isAdmin = roles.includes("ROLE_ADMIN");
 
       localStorage.setItem("token", response.token);
