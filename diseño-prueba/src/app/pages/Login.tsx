@@ -29,17 +29,8 @@ export function Login() {
       localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
       
       navigate("/");
-    } catch (err: any) {
-      const errorMsg = err?.message || "Error en la solicitud";
-      if (errorMsg.includes("403")) {
-        setError("Acceso denegado - Verifica credenciales");
-      } else if (errorMsg.includes("404")) {
-        setError("Backend no disponible en puerto 9091");
-      } else if (errorMsg.includes("Failed")) {
-        setError("No se puede conectar al servidor");
-      } else {
-        setError("Email o contraseña incorrectos");
-      }
+    } catch (err) {
+      setError("Email o contraseña incorrectos");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -133,8 +124,19 @@ export function Login() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-6 text-center"
+            className="mt-6 text-center space-y-3"
           >
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              ¿No tienes cuenta?{" "}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/signup")}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-semibold"
+              >
+                Regístrate aquí
+              </motion.button>
+            </div>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
