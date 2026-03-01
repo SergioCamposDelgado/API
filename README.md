@@ -1,4 +1,4 @@
-# 🌦️ 🌦️ Proyecto API  de Datos Meteorológicos
+# 🌦️ Proyecto API  de Datos Meteorológicos
 
 ## API Security y Datos Meteorológicos --- Spring Boot + JWT + Docker
 
@@ -17,9 +17,7 @@ utilizando:
 -   OpenAPI / Swagger
 -   Docker y Docker Compose
 
-El proyecto está diseñado para entornos formativos (DWES) y permite
-trabajar autenticación, autorización, documentación de APIs y despliegue
-reproducible.
+El proyecto permite gestionar datos climáticos, consultar el tiempo por ciudades y trabajar la persistencia de datos meteorológicos en un entorno seguro.
 
 ------------------------------------------------------------------------
 
@@ -33,7 +31,7 @@ reproducible.
     ├── log/
     ├── src/
     │   ├── Backend/
-    │   │   └── API_SECURITY_EXAMPLE/
+    │   │   └── API_METEOROLOGIA/
     │   ├── Frontend/
     │   └── main.sh
 
@@ -114,9 +112,9 @@ despliegue.
 
 La rama descargada automáticamente se define en `main.sh`:
 
-    BACKEND_REPO_URL="https://github.com/profeInformatica101/API_SECURITY_EXAMPLE.git"
-    BACKEND_BRANCH="agregado_cors"
-    BACKEND_DIR="$ROOT_DIR/src/Backend/API_SECURITY_EXAMPLE"
+    BACKEND_REPO_URL="https://github.com/SergioCamposDelgado/API.git"
+    BACKEND_BRANCH="documentacion"
+    BACKEND_DIR="$ROOT_DIR/src/Backend/API_METEOROLOGIA"
 
 Para cambiar la versión del backend:
 
@@ -144,13 +142,13 @@ El sistema realizará:
 
 POST `/api/v1/auth/signin`
 
-### Libros
+### Datos Meteorológicos
 
-GET `/api/v1/libros`\
-POST `/api/v1/libros`\
-GET `/api/v1/libros/{id}`\
-PUT `/api/v1/libros/{id}`\
-DELETE `/api/v1/libros/{id}`
+GET `/api/v1/weather`\
+POST `/api/v1/weather`\
+GET `/api/v1/weather/{id}`\
+PUT `/api/v1/weather/{id}`\
+DELETE `/api/v1/weather/{id}`
 
 ### Usuarios (ROLE_ADMIN)
 
