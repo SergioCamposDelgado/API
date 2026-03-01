@@ -1,4 +1,6 @@
 const API_BASE_URL = "http://localhost:9091/api/clima";
+const AUTH_BASE_URL = "http://localhost:9091/api/v1/auth";
+const USERS_BASE_URL = "http://localhost:9091/api/v1/users";
 
 
 export interface ApiWeatherResponse {
@@ -35,6 +37,22 @@ export interface City {
   nombre: string;
   latitud: number;
   longitud: number;
+}
+
+export interface SigninRequest {
+  email: string;
+  password: string;
+}
+
+export interface JwtAuthenticationResponse {
+  token: string;
+}
+
+export interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+  rol: string[];
 }
 
 export const getWeatherByCoordinates = async (
@@ -165,10 +183,13 @@ export const updateCity = async (id: number, city: Omit<City, 'id'>): Promise<Ci
   }
 };
 
-export const deleteCity = async (id: number): Promise<void> => {
+export const deleteCity = async (id: number, token: string): Promise<void> => {
   try {
     const response = await fetch(`${API_BASE_URL}/ciudades/${id}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {
@@ -176,6 +197,92 @@ export const deleteCity = async (id: number): Promise<void> => {
     }
   } catch (error) {
     console.error("Error deleting city:", error);
+    throw error;
+  }
+};
+
+export const signin = async (credentials: SigninRequest): Promise<JwtAuthenticationResponse> => {
+  try {
+    const response = await fetch(`${AUTH_BASE_URL}/signin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error signing in:", error);
+    throw error;
+  }
+};
+
+export const getUsers = async (): Promise<User[]> => {
+  try {
+    const response = await fetch(`${USERS_BASE_URL}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+};
+
+export const updateCityWithAuth = async (id: number, city: Omit<City, 'id'>, token: string): Promise<City> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ciudades/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(city),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating city:", error);
+    throw error;
+  }
+};
+
+export const addCityWithAuth = async (city: Omit<City, 'id'>, token: string): Promise<City> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ciudades`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(city),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error adding city:", error);
     throw error;
   }
 };

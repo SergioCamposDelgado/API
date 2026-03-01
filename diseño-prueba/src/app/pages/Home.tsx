@@ -4,8 +4,9 @@ import { ForecastCard, ForecastDay } from "../components/ForecastCard";
 import { LocationSelector } from "../components/LocationSelector";
 import { DayNightBackground } from "../components/DayNightBackground";
 import { motion } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { getWeatherByCoordinates, getCities, type City, type WeatherData } from "../services/weatherAPI";
+import { useNavigate } from "react-router";
 
 function Home() {
   const [cities, setCities] = useState<City[]>([]);
@@ -13,6 +14,10 @@ function Home() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(null);
+  
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
     const loadCities = async () => {
@@ -40,7 +45,6 @@ function Home() {
       try {
         const data = await getWeatherByCoordinates(currentLocation.latitud, currentLocation.longitud);
         console.log("Weather data:", data);
-        // Usar los datos reales del API
         setCurrentWeather(data);
       } catch (error) {
         console.error("Error fetching weather:", error);
@@ -89,12 +93,57 @@ function Home() {
             Clima
           </h1>
           
-          <LocationSelector
-            currentLocation={currentLocation}
-            onLocationChange={setCurrentLocation}
-            scrollProgress={scrollProgress}
-            cities={cities}
-          />
+          <div className="flex items-center gap-4">
+            <LocationSelector
+              currentLocation={currentLocation}
+              onLocationChange={setCurrentLocation}
+              scrollProgress={scrollProgress}
+              cities={cities}
+            />
+
+            {/* Auth Buttons */}
+            <div className="flex items-center gap-2">
+              {token && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate("/admin")}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  style={{ color: "white" }}
+                >
+                  <Settings className="w-4 h-4" />
+                  Admin
+                </motion.button>
+              )}
+
+              {token ? (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("email");
+                    navigate("/login");
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  style={{ color: "white" }}
+                >
+                  <LogOut className="w-4 h-4" />
+                  Salir
+                </motion.button>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate("/login")}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  style={{ color: "white" }}
+                >
+                  Iniciar sesión
+                </motion.button>
+              )}
+            </div>
+          </div>
         </motion.header>
 
         {/* Main weather section */}
