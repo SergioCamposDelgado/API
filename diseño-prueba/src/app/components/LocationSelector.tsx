@@ -1,18 +1,22 @@
 import { MapPin } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { City, cities } from "../data/cities";
+import { type City } from "../services/weatherAPI";
 
 interface LocationSelectorProps {
-  currentLocation: City;
+  currentLocation: City | null;
   onLocationChange: (location: City) => void;
   scrollProgress: number;
+  cities: City[];
 }
 
-export function LocationSelector({ currentLocation, onLocationChange, scrollProgress }: LocationSelectorProps) {
+export function LocationSelector({ currentLocation, onLocationChange, scrollProgress, cities }: LocationSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Calculate colors based on scroll progress
+  if (!currentLocation) {
+    return null;
+  }
+
   const borderColor = scrollProgress < 0.5 ? '#1a202c' : '#ffffff';
   const textColor = scrollProgress < 0.5 ? '#1a202c' : '#ffffff';
   const dropdownBg = scrollProgress < 0.5 ? '#ffffff' : '#2d3748';

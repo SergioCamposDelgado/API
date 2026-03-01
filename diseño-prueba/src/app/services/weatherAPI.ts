@@ -10,6 +10,13 @@ export interface WeatherData {
   feelsLike: number;
 }
 
+export interface City {
+  id?: number;
+  nombre: string;
+  latitud: number;
+  longitud: number;
+}
+
 export const getWeatherByCoordinates = async (
   latitude: number,
   longitude: number
@@ -27,6 +34,22 @@ export const getWeatherByCoordinates = async (
     return data;
   } catch (error) {
     console.error("Error fetching weather data:", error);
+    throw error;
+  }
+};
+
+export const getCities = async (): Promise<City[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ciudades`);
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching cities:", error);
     throw error;
   }
 };

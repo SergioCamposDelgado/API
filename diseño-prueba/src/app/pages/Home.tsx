@@ -5,10 +5,8 @@ import { LocationSelector } from "../components/LocationSelector";
 import { DayNightBackground } from "../components/DayNightBackground";
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
-import { City, cities } from "../data/cities";
-import { getWeatherByCoordinates } from "../services/weatherAPI";
+import { getWeatherByCoordinates, getCities, type City } from "../services/weatherAPI";
 
-// Mock weather data for different cities
 export const weatherDataByCity: Record<string, any> = {
   Madrid: {
     temperature: 24,
@@ -157,24 +155,43 @@ export const weatherDataByCity: Record<string, any> = {
 };
 
 function Home() {
-  const [currentLocation, setCurrentLocation] = useState<City>(cities[0]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [currentLocation, setCurrentLocation] = useState<City | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [currentWeather, setCurrentWeather] = useState(weatherDataByCity["Madrid"]);
 
-  // Fetch weather when location changes
   useEffect(() => {
+    const loadCities = async () => {
+      try {
+        const citiesData = await getCities();
+        setCities(citiesData);
+
+        if (citiesData.length > 0) {
+          setCurrentLocation(citiesData[0]);
+        }
+      } catch (error) {
+        console.error("Error loading cities:", error);
+      }
+    };
+
+    loadCities();
+  }, []);
+
+
+  useEffect(() => {
+    if (!currentLocation) return;
+
     const fetchWeather = async () => {
       setIsLoading(true);
       try {
         const data = await getWeatherByCoordinates(currentLocation.latitud, currentLocation.longitud);
         console.log("Weather data:", data);
-        // TODO: Update currentWeather with real data from API
-        // For now, use mock data
+
         setCurrentWeather(weatherDataByCity[currentLocation.nombre]);
       } catch (error) {
         console.error("Error fetching weather:", error);
-        // Fallback to mock data
+
         setCurrentWeather(weatherDataByCity[currentLocation.nombre]);
       } finally {
         setIsLoading(false);
@@ -184,7 +201,6 @@ function Home() {
     fetchWeather();
   }, [currentLocation]);
 
-  // Track scroll position
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -197,7 +213,6 @@ function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Calculate colors based on scroll progress
   const headerTextColor = scrollProgress < 0.5 ? '#1a202c' : '#ffffff';
   const scrollIndicatorOpacity = Math.max(0, 1 - scrollProgress * 5);
   const footerBorderColor = scrollProgress > 0.5 ? '#4a5568' : '#e2e8f0';
@@ -226,18 +241,25 @@ function Home() {
             currentLocation={currentLocation}
             onLocationChange={setCurrentLocation}
             scrollProgress={scrollProgress}
+            cities={cities}
           />
         </motion.header>
 
         {/* Main weather section */}
         <section className="container mx-auto px-6 py-12 sm:py-20 min-h-[70vh] flex items-center">
-          <WeatherCard
-            weather={{
-              ...currentWeather,
-              location: currentLocation.nombre,
-            }}
-            scrollProgress={scrollProgress}
-          />
+          {currentLocation ? (
+            <WeatherCard
+              weather={{
+                ...currentWeather,
+                location: currentLocation.nombre,
+              }}
+              scrollProgress={scrollProgress}
+            />
+          ) : (
+            <div style={{ color: headerTextColor }} className="text-center w-full">
+              Cargando ciudades...
+            </div>
+          )}
         </section>
 
         {/* Scroll indicator */}
