@@ -65,14 +65,14 @@ print_access_urls() {
   local ip; ip="$(get_private_ip || true)"
   echo
   say "Accesos locales (esta máquina):"
-  ok "  Frontend   → http://localhost:8081"
+  ok "  Frontend   → http://localhost:5173"
   ok "  Backend    → http://localhost:9091"
   ok "  Swagger UI → http://localhost:8083"
   ok "  MySQL      → localhost:3306"
   echo
   if [[ -n "${ip:-}" ]]; then
     say "Accesos desde otra máquina (LAN):"
-    ok "  Frontend   → http://${ip}:8081"
+    ok "  Frontend   → http://${ip}:5173"
     ok "  Backend    → http://${ip}:9091"
     ok "  Swagger UI → http://${ip}:8083"
     ok "  MySQL      → ${ip}:3306"
@@ -261,7 +261,7 @@ compose() {
 # -----------------------------
 # Backend (GitHub) + Dockerfile auto
 # -----------------------------
-BACKEND_REPO_URL="https://github.com/profeInformatica101/API_SEGURITY_EXAMPLE.git"
+BACKEND_REPO_URL="https://github.com/sergiocamposdelgado/API_SEGURITY_EXAMPLE.git"
 BACKEND_BRANCH="agregado_cors"
 BACKEND_DIR="$ROOT_DIR/src/Backend/API_SEGURITY_EXAMPLE"
 
@@ -372,7 +372,7 @@ cmd_up() {
   echo
   say "Levantando entorno con: $(detect_compose)"
   info "Backend    → http://localhost:9091"
-  info "Frontend   → http://localhost:8081"
+  info "Frontend   → http://localhost:5173"
   info "Swagger UI → http://localhost:8083"
   info "MySQL      → localhost:3306"
   echo

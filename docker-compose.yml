@@ -58,7 +58,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "8081:80"
+      - "5173:80"
 
   swagger-ui:
     image: swaggerapi/swagger-ui:latest
